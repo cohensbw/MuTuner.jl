@@ -8,3 +8,10 @@ Documentation for [MuTuner.jl](https://github.com/cohensbw/MuTuner.jl).
 This package exports a method for tuning the chemical potential to achieve a target particle number in grand canonical Monte Carlo simulations.
 The algorithm implemented in this package was introduced in the paper [arXiv:2201.01296](https://arxiv.org/abs/2201.01296).
 If you use this package in work leading to a publication, please consider citing this paper.
+
+## Installation
+
+To install [`LatticeUtilities.jl`](https://github.com/cohensbw/LatticeUtilities.jl) run following in the Julia REPL:
+```julia
+] add https://github.com/cohensbw/MuTuner.jl
+```
