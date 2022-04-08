@@ -11,7 +11,7 @@ If you use this package in work leading to a publication, please consider citing
 
 ## Installation
 
-To install [`LatticeUtilities.jl`](https://github.com/cohensbw/LatticeUtilities.jl) run following in the Julia REPL:
+To install [`MuTuner.jl`](https://github.com/cohensbw/MuTuner.jl) run following in the Julia REPL:
 ```julia
 ] add https://github.com/cohensbw/MuTuner.jl
 ```
