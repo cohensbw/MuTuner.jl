@@ -1,4 +1,4 @@
-# MuTuner
+# MuTuner.jl
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://cohensbw.github.io/MuTuner.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://cohensbw.github.io/MuTuner.jl/dev)
