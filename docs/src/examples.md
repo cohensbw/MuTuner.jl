@@ -4,28 +4,28 @@ On this page we include examples for how this package can be used.
 
 ## The Ising Model
 
-While the algorithm implmeneted by this package, introduced in the paper
-[arXiv:2201.01296](https://arxiv.org/abs/2201.01296) was used to tune the chemical
-potential ``\mu`` to achieve a target particle number ``\langle N \rangle``, it can
-be applied to achieve a target magnetization in a spin model by tuning the
+While the algorithm implmeneted in this package, introduced in the paper
+[arXiv:2201.01296](https://arxiv.org/abs/2201.01296), was initially designed to tune the
+chemical potential ``\mu`` to achieve a target particle number ``\langle N \rangle``, it can
+also be applied to achieve a target magnetization in a spin model by tuning the
 applied magnetic field.
 
 In this example we use [`MuTuner.jl`](https://github.com/cohensbw/MuTuner.jl) to tune the
-magnetic field ``B`` to achieve a target magnetization ``\langle m \rangle`` is a Monte Carlo
+magnetic field ``B`` to achieve a target magnetization ``\langle m \rangle`` in a Monte Carlo
 simulation of the Ising model
 ```math
 H = -J \sum_{\langle ij\rangle} s_{i}s_{j} - B \sum_{i} s_{i},
 ```
 where ``J`` is the coupling strength.
-The tuning algorithm can be directly applied by simply applying the substitutions
+The tuning algorithm can be directly applied by applying the substitutions
 ```math
 \mu \mapsto B,\quad N \mapsto M,\quad \kappa \mapsto \chi,
 ```
 where ``\kappa`` and ``\chi`` are the compressibility and magnetic
 susceptibility respectively.
 
-An example script using [`MuTuner.jl`](https://github.com/cohensbw/MuTuner.jl) in a
-Monte Carlo simulation of the Ising Model is show below.
+Below is an example script using [`MuTuner.jl`](https://github.com/cohensbw/MuTuner.jl) in a
+Monte Carlo simulation of the Ising Model:
 
 ```julia
 using MuTuner
