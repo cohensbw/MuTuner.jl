@@ -4,25 +4,30 @@ On this page we include examples for how this package can be used.
 
 ## The Ising Model
 
-While the algorithm implmeneted in this package, introduced in the paper
-[arXiv:2201.01296](https://arxiv.org/abs/2201.01296), was initially designed to tune the
-chemical potential ``\mu`` to achieve a target particle number ``\langle N \rangle``, it can
-also be applied to achieve a target magnetization in a spin model by tuning the
-applied magnetic field.
+While the algorithm implmeneted in this package, and introduced in
+[Phys. Rev. E 105, 045311](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.105.045311),
+was initially designed to tune the chemical potential ``\mu`` to achieve a target particle
+density ``n_0``, it can also be applied to achieve a target magnetization
+``m_0`` in a spin model by tuning the applied magnetic field ``B``.
 
 In this example we use [`MuTuner.jl`](https://github.com/cohensbw/MuTuner.jl) to tune the
-magnetic field ``B`` to achieve a target magnetization ``\langle m \rangle`` in a Monte Carlo
-simulation of the Ising model
+magnetic field ``B`` to achieve a target magnetization ``m_0`` in a Monte Carlo
+simulation of the square lattice Ising model
 ```math
 H = -J \sum_{\langle ij\rangle} s_{i}s_{j} - B \sum_{i} s_{i},
 ```
-where ``J`` is the coupling strength.
+In that above ``J`` is the coupling strength, and each
+Ising field can take on a value ``s_i = \pm 1``.
 The tuning algorithm can be directly applied by applying the substitutions
 ```math
-\mu \mapsto B,\quad N \mapsto M,\quad \kappa \mapsto \chi,
+\mu \mapsto B, \quad N \mapsto M, \quad \kappa \mapsto \chi,
 ```
 where ``\kappa`` and ``\chi`` are the compressibility and magnetic
-susceptibility respectively.
+susceptibility respectively, and ``M`` is the total magnetization.
+Therefore, given a fixed temperature ``T``, we are interested in tuning the average
+magnetization ``\langle m \rangle = \langle M \rangle / L^2`` to the target magnetization
+``m_0``, where ``L`` is the linear extent of the square lattice.
+
 
 Below is an example script using [`MuTuner.jl`](https://github.com/cohensbw/MuTuner.jl) in a
 Monte Carlo simulation of the Ising Model:
@@ -119,7 +124,7 @@ end
 
 # replay the tuning timeseries for all relevant observables.
 # these resulting timeseries arrays can be used to generate a figure
-# comprable to Figure 1 in the paper arXiv:2201.01296.
+# comprable to Figure 1 in the paper Phys. Rev. E 105, 045311.
 tape        = replay(Btuner);
 B_traj      = tape.μ_traj
 B_bar_traj  = tape.μ_bar_traj
