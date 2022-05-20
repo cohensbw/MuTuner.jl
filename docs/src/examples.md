@@ -4,7 +4,7 @@ On this page we include examples for how this package can be used.
 
 ## The Ising Model
 
-While the algorithm implmeneted in this package, and introduced in
+While the algorithm implemented in this package, and introduced in
 [Phys. Rev. E 105, 045311](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.105.045311),
 was initially designed to tune the chemical potential ``\mu`` to achieve a target particle
 density ``n_0``, it can also be applied to achieve a target magnetization
@@ -122,9 +122,9 @@ for i in 1:N
     B = update!(μtuner=Btuner, n=m, N²=M²)
 end
 
-# replay the tuning timeseries for all relevant observables.
-# these resulting timeseries arrays can be used to generate a figure
-# comprable to Figure 1 in the paper Phys. Rev. E 105, 045311.
+# replay the tuning time-series for all relevant observables.
+# these resulting time-series arrays can be used to generate a figure
+# comparable to Figure 1 in the paper Phys. Rev. E 105, 045311.
 tape        = replay(Btuner);
 B_traj      = tape.μ_traj
 B_bar_traj  = tape.μ_bar_traj
