@@ -13,5 +13,5 @@ If you use this package in work leading to a publication, please consider citing
 
 To install [`MuTuner.jl`](https://github.com/cohensbw/MuTuner.jl) run following in the Julia REPL:
 ```julia
-] add https://github.com/cohensbw/MuTuner.jl
+] add MuTuner
 ```
