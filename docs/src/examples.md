@@ -103,7 +103,7 @@ m₀ = 0.5
 s = rand(-1:2:1,L,L)
 
 # initialize MuTunerLogger for tuning magnetic field B
-Btuner = MuTunerLogger(n₀=m₀, β=1/T, V=L^2, U₀=J, μ₀=B, c=0.5)
+Btuner = MuTunerLogger(n₀=m₀, β=1/T, V=L^2, u₀=J, μ₀=B, c=0.5)
 
 # perform Monte Carlo simulation
 for i in 1:N
@@ -125,7 +125,7 @@ end
 # replay the tuning time-series for all relevant observables.
 # these resulting time-series arrays can be used to generate a figure
 # comparable to Figure 1 in the paper Phys. Rev. E 105, 045311.
-tape        = replay(Btuner);
+tape        = replay(Btuner)
 B_traj      = tape.μ_traj
 B_bar_traj  = tape.μ_bar_traj
 m_traj      = tape.N_traj / L^2
