@@ -33,6 +33,7 @@ Below is an example script using [`MuTuner.jl`](https://github.com/cohensbw/MuTu
 Monte Carlo simulation of the Ising Model:
 
 ```julia
+using Revise
 using MuTuner
 
 # calculate the site energy for site (i,j)
@@ -62,7 +63,7 @@ function monte_carlo_sweep!(s::Matrix{Int}, T::E, J::E, B::E) where {E<:Abstract
     L = size(s,1)
     
     # iterate over all sites in lattice
-    for j in 1:L
+    @fastmath @inbounds for j in 1:L
         for i in 1:L
             
             # calculate change in energy associated with spin flip
@@ -81,57 +82,55 @@ function monte_carlo_sweep!(s::Matrix{Int}, T::E, J::E, B::E) where {E<:Abstract
     return nothing
 end
 
-# system size
-L = 100
+function run_simulation()
 
-# temperature
-T = 2.5
+    # system size
+    L = 100
 
-# coupling strength
-J = 1.0
+    # temperature
+    T = 2.5
 
-# initial magnetic field
-B = 0.0
+    # coupling strength
+    J = 1.0
 
-# number of Monte Carlo sweeps to perform
-N = 100_000
+    # initial magnetic field
+    B = 0.0
 
-# target magnetization
-m₀ = 0.5
+    # number of Monte Carlo sweeps to perform
+    N = 100_000
 
-# initialize ising spins to random initial configuration
-s = rand(-1:2:1,L,L)
+    # target magnetization
+    m₀ = 0.5
 
-# initialize MuTunerLogger for tuning magnetic field B
-Btuner = MuTunerLogger(n₀=m₀, β=1/T, V=L^2, u₀=J, μ₀=B, c=0.5)
+    # initialize ising spins to random initial configuration
+    s = rand(-1:2:1,L,L)
 
-# perform Monte Carlo simulation
-for i in 1:N
-    
-    # perform Monte Carlo sweep through lattice
-    monte_carlo_sweep!(s, T, J, B)
-    
-    # measure ⟨m⟩ = ⟨M⟩/L²
-    M = float(sum(s))
-    m = M/L^2
-    
-    # measure ⟨M²⟩
-    M² = M^2
-    
-    # update the magnetic field
-    B = update!(μtuner=Btuner, n=m, N²=M²)
+    # initialize MuTunerLogger for tuning magnetic field B
+    Btuner = MuTunerLogger(n₀=m₀, β=1/T, V=L^2, u₀=J, μ₀=B, c=0.5, s=1.0+0.0im)
+
+    # perform Monte Carlo simulation
+    for i in 1:N
+        
+        # perform Monte Carlo sweep through lattice
+        monte_carlo_sweep!(s, T, J, B)
+        
+        # measure ⟨m⟩ = ⟨M⟩/L²
+        M = float(sum(s))
+        m = M/L^2
+        
+        # measure ⟨M²⟩
+        M² = M^2
+        
+        # update the magnetic field
+        B = update!(μtuner=Btuner, n=m, N²=M², s=1.0+0.0im)
+    end
+
+    # replay the tuning time-series for all relevant observables and write to file.
+    save(Btuner, "Btuner.csv")
+
+    return nothing
 end
 
-# replay the tuning time-series for all relevant observables.
-# these resulting time-series arrays can be used to generate a figure
-# comparable to Figure 1 in the paper Phys. Rev. E 105, 045311.
-tape        = replay(Btuner)
-B_traj      = tape.μ_traj
-B_bar_traj  = tape.μ_bar_traj
-m_traj      = tape.N_traj / L^2
-m_bar_traj  = tape.N_bar_traj / L^2
-χ_bar_traj  = tape.κ_bar_traj
-χ_fluc_traj = tape.κ_fluc_traj
-χ_min_traj  = tape.κ_min_traj
-χ_max_traj  = tape.κ_max_traj
+# run the simulation
+run_simulation()
 ```
