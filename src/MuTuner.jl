@@ -1,6 +1,8 @@
 module MuTuner
 
-export MuTunerLogger, update!, replay
+using Printf
+
+export MuTunerLogger, update!, save, replay
 export update_forgetful_mean
 export update_forgetful_var
 export update_forgetful_mv
@@ -137,6 +139,37 @@ function MuTunerLogger(n₀::T, β::T, V::Int, u₀::T=1.0, μ₀::T=0.0, c::T=0
 end
 
 MuTunerLogger(; n₀, β, V, u₀=1.0, μ₀=0.0, c=0.5, s=1.0) = MuTunerLogger(n₀, β, V, u₀, μ₀, c, s)
+
+
+@doc raw"""
+    save(μtuner::MuTunerLogger{T,S}, filename::String, filepath::String = "")
+
+Replay the chemical potential tuner to its current state, writing the time series of
+relevant values to a space-delimited CSV file.
+"""
+function save(μtuner::MuTunerLogger{T,S}, filename::String, filepath::String = "") where {T<:AbstractFloat, S<:Number}
+
+    # write csv file
+    open(joinpath(filepath,filename), "w") do fout
+        # write file header
+        write(fout, "t mu N Nsqrd sign_real sign_imag mu_bar mu_var N_bar N_var Nsqrd_bar kappa_bar kappa_fluc kappa_min kappa_max sign_bar_real sign_bar_imag sign_var_real sign_var_imag\n")
+        # get current of time-steps
+        t_max = length(μtuner.μ_traj) - 1
+        # iterate over time steps
+        for t in 0:t_max
+            # update the chemical potential based on the latest measurements
+            (μ_tp1, μtuner.μ_bar, μtuner.μ_var, μtuner.N_bar, μtuner.N_var, μtuner.s_bar, μtuner.s_var,
+            μtuner.N²_bar, μtuner.κ_bar, κ_fluc, κ_min, κ_max) = _update!(μtuner, t)
+            # write data to file
+            @printf(fout, "%d %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f %.6f\n",
+                    t, real(μtuner.μ_traj[t+1]), real(μtuner.N_traj[t+1]), real(μtuner.N²_traj[t+1]), real(μtuner.s_traj[t+1]), imag(μtuner.s_traj[t+1]),
+                    real(μtuner.μ_bar), real(μtuner.μ_var), real(μtuner.N_bar), real(μtuner.N_var), real(μtuner.N²_bar), real(μtuner.κ_bar),
+                    real(κ_fluc), real(κ_min), real(κ_max), real(μtuner.s_bar), imag(μtuner.s_bar), real(μtuner.s_var), imag(μtuner.s_var))
+        end
+    end
+
+    return nothing
+end
 
 
 @doc raw"""
