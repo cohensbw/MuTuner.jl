@@ -311,7 +311,7 @@ function _update!(μtuner::MuTunerLogger{T,S}, t::Int) where {T<:AbstractFloat, 
     κ_min = α/sqrt(t+1)
 
     # get upper bound for κ
-    if iszero(t) || iszero(μ_var)
+    if iszero(t) || iszero(μ_var) || (N_var / μ_var) < 0
         κ_max = κ_min
     else
         κ_max = sqrt(N_var / μ_var)
