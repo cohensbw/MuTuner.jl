@@ -321,7 +321,7 @@ function _update!(μtuner::MuTunerLogger{T,S}, t::Int) where {T<:AbstractFloat, 
     κ_bar = max(κ_min , min(κ_max , κ_fluc))
 
     # update the chemical potential
-    μ_tp1 = μ_bar + real(N₀ - N_bar)/κ_bar
+    μ_tp1 = μ_bar + real(N₀ - (N_bar/s_bar))/κ_bar
 
     return (μ_tp1, μ_bar, μ_var, N_bar, N_var, s_bar, s_var, N²_bar, κ_bar, κ_fluc, κ_min, κ_max)
 end
