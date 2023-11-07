@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Examples · MuTuner.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link rel="canonical" href="https://cohensbw.github.io/MuTuner.jl/examples/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.039/juliamono-regular.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.11/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">MuTuner.jl</a></span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li class="is-active"><a class="tocitem" href>Examples</a><ul class="internal"><li><a class="tocitem" href="#The-Ising-Model"><span>The Ising Model</span></a></li></ul></li><li><a class="tocitem" href="../api/">API</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Examples</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Examples</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/cohensbw/MuTuner.jl/blob/master/docs/src/examples.md#" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Examples"><a class="docs-heading-anchor" href="#Examples">Examples</a><a id="Examples-1"></a><a class="docs-heading-anchor-permalink" href="#Examples" title="Permalink"></a></h1><p>On this page we include examples for how this package can be used.</p><h2 id="The-Ising-Model"><a class="docs-heading-anchor" href="#The-Ising-Model">The Ising Model</a><a id="The-Ising-Model-1"></a><a class="docs-heading-anchor-permalink" href="#The-Ising-Model" title="Permalink"></a></h2><p>While the algorithm implemented in this package, and introduced in <a href="https://journals.aps.org/pre/abstract/10.1103/PhysRevE.105.045311">Phys. Rev. E 105, 045311</a>, was initially designed to tune the chemical potential <span>$\mu$</span> to achieve a target particle density <span>$n_0$</span>, it can also be applied to achieve a target magnetization <span>$m_0$</span> in a spin model by tuning the applied magnetic field <span>$B$</span>.</p><p>In this example we use <a href="https://github.com/cohensbw/MuTuner.jl"><code>MuTuner.jl</code></a> to tune the magnetic field <span>$B$</span> to achieve a target magnetization <span>$m_0$</span> in a Monte Carlo simulation of the square lattice Ising model</p><p class="math-container">\[H = -J \sum_{\langle ij\rangle} s_{i}s_{j} - B \sum_{i} s_{i},\]</p><p>In that above <span>$J$</span> is the coupling strength, and each Ising field can take on a value <span>$s_i = \pm 1$</span>. The tuning algorithm can be directly applied by applying the substitutions</p><p class="math-container">\[\mu \mapsto B, \quad N \mapsto M, \quad \kappa \mapsto \chi,\]</p><p>where <span>$\kappa$</span> and <span>$\chi$</span> are the compressibility and magnetic susceptibility respectively, and <span>$M$</span> is the total magnetization. Therefore, given a fixed temperature <span>$T$</span>, we are interested in tuning the average magnetization <span>$\langle m \rangle = \langle M \rangle / L^2$</span> to the target magnetization <span>$m_0$</span>, where <span>$L$</span> is the linear extent of the square lattice.</p><p>Below is an example script using <a href="https://github.com/cohensbw/MuTuner.jl"><code>MuTuner.jl</code></a> in a Monte Carlo simulation of the Ising Model:</p><pre><code class="language-julia hljs">using Revise
+using MuTuner
+
+# calculate the site energy for site (i,j)
+function calc_Eᵢⱼ(s::Matrix{Int}, i::Int, j::Int, J::E, B::E) where {E&lt;:AbstractFloat}
+    
+    L    = size(s,1)
+    Eᵢⱼ  = -B * s[i,j]
+    Eᵢⱼ += -J * s[i,j] * s[mod1(i+1,L),j]
+    Eᵢⱼ += -J * s[i,j] * s[mod1(i-1,L),j]
+    Eᵢⱼ += -J * s[i,j] * s[i,mod1(j+1,L)]
+    Eᵢⱼ += -J * s[i,j] * s[i,mod1(j-1,L)]
+    return Eᵢⱼ
+end
+
+# calculate the change in energy associated with a spin flip on site (i,j)
+function calc_ΔEᵢⱼ(s::Matrix{Int}, i::Int, j::Int, J::E, B::E) where {E&lt;:AbstractFloat}
+    
+    Eᵢⱼ  = calc_Eᵢⱼ(s,i,j,J,B)
+    ΔEᵢⱼ = -2*Eᵢⱼ
+    return ΔEᵢⱼ
+end
+
+# sweep through the lattice, attempting a spin flip on each site in the lattice
+function monte_carlo_sweep!(s::Matrix{Int}, T::E, J::E, B::E) where {E&lt;:AbstractFloat}
+    
+    # get lattice size
+    L = size(s,1)
+    
+    # iterate over all sites in lattice
+    @fastmath @inbounds for j in 1:L
+        for i in 1:L
+            
+            # calculate change in energy associated with spin flip
+            ΔEᵢⱼ = calc_ΔEᵢⱼ(s,i,j,J,B)
+            
+            # calculate metropolis-hastings acceptance probability
+            Pᵢⱼ  = min(1.0, exp(-ΔEᵢⱼ/T))
+            
+            # accept or reject proposed spin flip
+            if rand() &lt; Pᵢⱼ
+                s[i,j] = -s[i,j]
+            end
+        end
+    end
+    
+    return nothing
+end
+
+function run_simulation()
+
+    # system size
+    L = 100
+
+    # temperature
+    T = 2.5
+
+    # coupling strength
+    J = 1.0
+
+    # initial magnetic field
+    B = 0.0
+
+    # number of Monte Carlo sweeps to perform
+    N = 100_000
+
+    # target magnetization
+    m₀ = 0.5
+
+    # initialize ising spins to random initial configuration
+    s = rand(-1:2:1,L,L)
+
+    # initialize MuTunerLogger for tuning magnetic field B
+    Btuner = MuTunerLogger(n₀=m₀, β=1/T, V=L^2, u₀=J, μ₀=B, c=0.5, s=1.0+0.0im)
+
+    # perform Monte Carlo simulation
+    for i in 1:N
+        
+        # perform Monte Carlo sweep through lattice
+        monte_carlo_sweep!(s, T, J, B)
+        
+        # measure ⟨m⟩ = ⟨M⟩/L²
+        M = float(sum(s))
+        m = M/L^2
+        
+        # measure ⟨M²⟩
+        M² = M^2
+        
+        # update the magnetic field
+        B = update!(μtuner=Btuner, n=m, N²=M², s=1.0+0.0im)
+    end
+
+    # replay the tuning time-series for all relevant observables and write to file.
+    save(Btuner, &quot;Btuner.csv&quot;)
+
+    return nothing
+end
+
+# run the simulation
+run_simulation()</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../api/">API »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.15 on <span class="colophon-date" title="Tuesday 7 November 2023 18:41">Tuesday 7 November 2023</span>. Using Julia version 1.9.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
