@@ -3,6 +3,7 @@ module MuTuner
 using Printf
 
 export MuTunerLogger, update!, save, replay
+export init_mutunerlogger
 export update_forgetful_mean
 export update_forgetful_var
 export update_forgetful_mv
@@ -139,6 +140,54 @@ function MuTunerLogger(n₀::T, β::T, V::Int, u₀::T=1.0, μ₀::T=0.0, c::T=0
 end
 
 MuTunerLogger(; n₀, β, V, u₀=1.0, μ₀=0.0, c=0.5, s=1.0) = MuTunerLogger(n₀, β, V, u₀, μ₀, c, s)
+
+
+@doc raw"""
+    init_mutunerlogger(;
+        # KEYWORD ARGUMENTS
+        target_density::T,
+        inverse_temperature::T,
+        system_size::Int,
+        intensive_energy_scale::T = 1.0,
+        initial_chemical_potential::T = 0.0,
+        memory_fraction::T = 0.5,
+        complex_sign::Bool = false,
+    ) where {T<:AbstractFloat}
+
+Initializes a [`MuTunerLogger`](@ref) instance with the given parameters.
+
+# Keyword Arguments
+
+- `target_density::T`: Target particle density ``\langle n \rangle``.
+- `inverse_temperature::T`: Inverse temperature ``\beta``.
+- `system_size::Int`: System size ``V``.
+- `intensive_energy_scale::T = 1.0`: Characteristic intensive energy scale ``u_0``.
+- `initial_chemical_potential::T = 0.0`: Initial guess for chemical potential ``\mu``.
+- `memory_fraction::T = 0.5`: Fraction of measurement history that is retained and used when calculating forgetful averages and variances.
+- `complex_sign_problem::Bool = false`: If true, then the Monte Carlo simulation suffers from a complex sign problem wherein the Monte Carlo weights are complex.
+"""
+function init_mutunerlogger(;
+    # KEYWORD ARGUMENTS
+    target_density::T,
+    inverse_temperature::T,
+    system_size::Int,
+    intensive_energy_scale::T = 1.0,
+    initial_chemical_potential::T = 0.0,
+    memory_fraction::T = 0.5,
+    complex_sign_problem::Bool = false
+) where {T<:AbstractFloat}
+
+    @assert 0.0 < memory_fraction ≤ 1.0
+    return MuTunerLogger(
+        target_density,
+        inverse_temperature,
+        system_size,
+        intensive_energy_scale,
+        initial_chemical_potential,
+        1 - memory_fraction,
+        complex_sign_problem ? zero(Complex{T}) : zero(T),
+    )
+end
 
 
 @doc raw"""

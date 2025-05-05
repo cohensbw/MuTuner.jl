@@ -1,7 +1,7 @@
 name = "MuTuner"
 uuid = "206a444d-62d4-4bef-89ca-f2a4a27f2209"
 authors = ["Benjamin Cohen-Stead <benwcs@gmail.com>"]
-version = "1.2.4"
+version = "1.2.5"
 
 [deps]
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
