@@ -151,7 +151,7 @@ MuTunerLogger(; n₀, β, V, u₀=1.0, μ₀=0.0, c=0.5, s=1.0) = MuTunerLogger(
         intensive_energy_scale::T = 1.0,
         initial_chemical_potential::T = 0.0,
         memory_fraction::T = 0.5,
-        complex_sign::Bool = false,
+        complex_sign_problem::Bool = false,
     ) where {T<:AbstractFloat}
 
 Initializes a [`MuTunerLogger`](@ref) instance with the given parameters.
@@ -282,13 +282,18 @@ end
 
 
 @doc raw"""
-    update!(μtuner::MuTunerLogger{T}, n::T, N²::T,
-            s::S=one(S)) where {T<:AbstractFloat, S<:Number}
+    update!(
+        μtuner::MuTunerLogger{T,S},
+        n::Number, N²::Number, s::S=one(S)
+    ) where {T<:AbstractFloat, S<:Number}
 
 Update the chemical potential given new measurements of the particle density `n`,
 the total particle number squared `N²`, and the sign `s`.
 """
-function update!(μtuner::MuTunerLogger{T}, n::T, N²::T, s::S=one(S)) where {T<:AbstractFloat, S<:Number}
+function update!(
+    μtuner::MuTunerLogger{T,S},
+    n::Number, N²::Number, s::S=one(S)
+) where {T<:AbstractFloat, S<:Number}
 
     (; μ_tp1, μ_traj, N_traj, s_traj, N²_traj, V) = μtuner
 
